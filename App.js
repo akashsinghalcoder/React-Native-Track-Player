@@ -9,7 +9,10 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View,Button} from 'react-native';
 import TrackPlayer from 'react-native-track-player';
-
+import Header from './Header';
+import AlbumArt from './AlbumArt';
+import TrackDetails from './TrackDetails';
+import SeekBar from './SeekBar.js';
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
@@ -20,28 +23,28 @@ const instructions = Platform.select({
 
 
 
+
 type Props = {};
 export default class App extends Component<Props> {
   constructor(props)
   {
     super(props);
+    this.state={currentposition:0};
      this.getstate = this.getstate.bind(this);
   }
+    seek(time) {
+    time = Math.round(time);
+  TrackPlayer.seekTo(time);
+  TrackPlayer.play();
+  this.setState({currentposition:time});
 
-
-
-
-
-
-
+  }
 
 
 getstate()
  {
   
   TrackPlayer.setupPlayer().then(async () => {
-
-
     TrackPlayer.updateOptions({
             capabilities: [
                 TrackPlayer.CAPABILITY_PLAY,
@@ -51,45 +54,46 @@ getstate()
                 TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS
             ]
         });
- 
     // Adds a track to the queue
     await TrackPlayer.add({
         id: 'trackId',
         url: require('./audio_house.mp3'),
         title: 'Track Title',
         artist: 'Track Artist',
-        
     });
  
     // Starts playing it
     TrackPlayer.play();
+    setInterval(()=>{
+let currentpositioni=this.state.currentposition+1;
+this.setState({currentposition:currentpositioni});
+
+    },1000);
  
 });
-
   }
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
-        <Button
-  onPress={this.getstate}
-  title="Learn More"
-  color="#841584"
-  accessibilityLabel="Learn more about this purple button"
-/>
+        <Header />
+        <AlbumArt url="https://reactjs.org/logo-og.png"/>
+        <TrackDetails title="Ye zindagi" artist="KK"/>
+
+         <SeekBar
+          onSeek={this.seek.bind(this)}
+          trackLength={29}
+          onSlidingStart={() => TrackPlayer.pause()}
+          currentposition={this.state.currentposition} />
+        <Button onPress={this.getstate} title="Learn More" color="#841584"/>
       </View>
     );
   }
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    flexDirection:'column',
+    backgroundColor: '#000000',
   },
   welcome: {
     fontSize: 20,
