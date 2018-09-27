@@ -19,7 +19,7 @@ export default class Header extends Component
     render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>WorkAround</Text>
+        <Text style={styles.welcome}>Music Player</Text>
       </View>
     );
   }

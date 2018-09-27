@@ -22,6 +22,29 @@ const instructions = Platform.select({
 
 
 
+/*
+export const TRACKS = [
+  {
+    title: 'Stressed Out',
+    artist: 'Twenty One Pilots',
+    albumArtUrl: "http://36.media.tumblr.com/14e9a12cd4dca7a3c3c4fe178b607d27/tumblr_nlott6SmIh1ta3rfmo1_1280.jpg",
+    audioUrl: "http://russprince.com/hobbies/files/13%20Beethoven%20-%20Fur%20Elise.mp3",
+  },
+  {
+    title: 'Love Yourself',
+    artist: 'Justin Bieber',
+    albumArtUrl: "http://arrestedmotion.com/wp-content/uploads/2015/10/JB_Purpose-digital-deluxe-album-cover_lr.jpg",
+    audioUrl: 'http://oranslectio.files.wordpress.com/2013/12/39-15-mozart_-adagio-fugue-in-c-minor-k-546.mp3',
+  },
+  {
+    title: 'Hotline Bling',
+    artist: 'Drake',
+    albumArtUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/c9/Drake_-_Hotline_Bling.png',
+    audioUrl: 'http://russprince.com/hobbies/files/13%20Beethoven%20-%20Fur%20Elise.mp3',
+  },
+];
+*/
+
 
 
 type Props = {};
@@ -29,7 +52,7 @@ export default class App extends Component<Props> {
   constructor(props)
   {
     super(props);
-    this.state={currentposition:0};
+    this.state={currentposition:0,playing:'NONE'};
      this.getstate = this.getstate.bind(this);
   }
     seek(time) {
@@ -43,6 +66,16 @@ export default class App extends Component<Props> {
 
 getstate()
  {
+
+  
+  if(this.state.playing=='PLAY')
+  {
+
+    TrackPlayer.pause();
+    this.setState({playing:'PAUSE'})
+     
+     return;
+  }
   
   TrackPlayer.setupPlayer().then(async () => {
     TrackPlayer.updateOptions({
@@ -57,19 +90,28 @@ getstate()
     // Adds a track to the queue
     await TrackPlayer.add({
         id: 'trackId',
-        url: require('./audio_house.mp3'),
+        url: 'http://russprince.com/hobbies/files/13%20Beethoven%20-%20Fur%20Elise.mp3',
         title: 'Track Title',
         artist: 'Track Artist',
     });
- 
+
+
+
+    this.setState({playing:'PLAY'}); 
     // Starts playing it
     TrackPlayer.play();
-    setInterval(()=>{
+    timer=setInterval(()=>{
+       if(this.state.currentposition==300)
+       {
+        this.setState({currentposition:0,playing:'PAUSE'});
+        TrackPlayer.pause();
+       }
+
+      else if(this.state.playing=='PLAY')
+      {
 let currentpositioni=this.state.currentposition+1;
 this.setState({currentposition:currentpositioni});
-
-    },1000);
- 
+}},1000); 
 });
   }
   render() {
@@ -81,10 +123,10 @@ this.setState({currentposition:currentpositioni});
 
          <SeekBar
           onSeek={this.seek.bind(this)}
-          trackLength={29}
+          trackLength={300}
           onSlidingStart={() => TrackPlayer.pause()}
           currentposition={this.state.currentposition} />
-        <Button onPress={this.getstate} title="Learn More" color="#841584"/>
+        <Button onPress={this.getstate} title="Play button" color="#841584"/>
       </View>
     );
   }
