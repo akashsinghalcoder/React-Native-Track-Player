@@ -45,7 +45,22 @@ export const TRACKS = [
 ];
 */
 
+var track1={
 
+
+    id: 'trackId1',
+        url: 'http://russprince.com/hobbies/files/13%20Beethoven%20-%20Fur%20Elise.mp3',
+        title: 'Track Title',
+        artist: 'Track Artist',
+  };
+    var track2={
+
+
+    id: 'trackId1',
+        url: 'http://russprince.com/hobbies/files/13%20Beethoven%20-%20Fur%20Elise.mp3',
+        title: 'Track Title',
+        artist: 'Track Artist',
+  };
 
 type Props = {};
 export default class App extends Component<Props> {
@@ -54,6 +69,8 @@ export default class App extends Component<Props> {
     super(props);
     this.state={currentposition:0,playing:'NONE'};
      this.getstate = this.getstate.bind(this);
+     this.nextsong=this.nextsong.bind(this);
+     this.previoussong=this.previoussong.bind(this);
   }
     seek(time) {
     time = Math.round(time);
@@ -62,6 +79,27 @@ export default class App extends Component<Props> {
   this.setState({currentposition:time});
 
   }
+  nextsong()
+  {
+    if(this.state.playing=='NONE')
+    {
+      this.getstate();
+      return;
+    }
+    TrackPlayer.skipToNext()
+    this.setState({currentposition:0,playing:'PLAY'});
+  }
+   previoussong()
+  {
+    if(this.state.playing=='NONE')
+    {
+      this.getstate();
+      return;
+    }
+    TrackPlayer.skipToPrevious();
+    this.setState({currentposition:0,playing:'PLAY'});
+  }
+  
 
 
 getstate()
@@ -70,13 +108,11 @@ getstate()
   
   if(this.state.playing=='PLAY')
   {
-
     TrackPlayer.pause();
     this.setState({playing:'PAUSE'})
      
      return;
   }
-  
   TrackPlayer.setupPlayer().then(async () => {
     TrackPlayer.updateOptions({
             capabilities: [
@@ -88,14 +124,7 @@ getstate()
             ]
         });
     // Adds a track to the queue
-    await TrackPlayer.add({
-        id: 'trackId',
-        url: 'http://russprince.com/hobbies/files/13%20Beethoven%20-%20Fur%20Elise.mp3',
-        title: 'Track Title',
-        artist: 'Track Artist',
-    });
-
-
+    await TrackPlayer.add([track1,track2]);
 
     this.setState({playing:'PLAY'}); 
     // Starts playing it
@@ -119,6 +148,7 @@ this.setState({currentposition:currentpositioni});
       <View style={styles.container}>
         <Header />
         <AlbumArt url="https://reactjs.org/logo-og.png"/>
+      
         <TrackDetails title="Ye zindagi" artist="KK"/>
 
          <SeekBar
@@ -126,7 +156,13 @@ this.setState({currentposition:currentpositioni});
           trackLength={300}
           onSlidingStart={() => TrackPlayer.pause()}
           currentposition={this.state.currentposition} />
+
+
         <Button onPress={this.getstate} title="Play button" color="#841584"/>
+
+        <Button onPress={this.nextsong} title="Next song" color="#841584"/>
+
+        <Button onPress={this.previoussong} title="Previous song" color="#841584"/>
       </View>
     );
   }
